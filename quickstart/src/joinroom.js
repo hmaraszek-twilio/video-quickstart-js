@@ -3,6 +3,7 @@
 const { connect, createLocalVideoTrack, Logger } = require('twilio-video');
 const { isMobile } = require('./browser');
 const takeLocalVideoSnapshot = require('./localvideosnapshot');
+const setupMediaDeviceSelection = require('./mediaselection');
 const updateNetworkQualityIndicator = require('./networkquality');
 const showError = require('./showerror');
 const togglePip = require('./togglepip');
@@ -243,7 +244,8 @@ async function joinRoom(token, connectOptions) {
   // Join to the Room with the given AccessToken and ConnectOptions.
   const room = await connect(token, connectOptions);
 
-  // Save the LocalVideoTrack.
+  // Save the LocalTracks.
+  let localAudioTrack = Array.from(room.localParticipant.audioTracks.values())[0].track;
   let localVideoTrack = Array.from(room.localParticipant.videoTracks.values())[0].track;
 
   // Make the Room available in the JavaScript console for debugging.
@@ -251,6 +253,22 @@ async function joinRoom(token, connectOptions) {
 
   // Handle the LocalParticipant's media.
   participantConnected(room.localParticipant, room);
+
+  // Enable changing media devices while the user is in the Room.
+  const cleanupMediaDeviceSelection = setupMediaDeviceSelection({
+    getAudioTrack: () => localAudioTrack,
+    getVideoTrack: () => localVideoTrack,
+    setAudioTrack: track => {
+      localAudioTrack = track;
+    },
+    setVideoTrack: track => {
+      localVideoTrack = track;
+    }
+  }, (error, alreadyDisplayed) => {
+    if (!alreadyDisplayed) {
+      showError($showErrorModal, error);
+    }
+  });
 
   // Enable snapshots of the local video while the user is in the Room.
   const localVideoElement = $(`div#${room.localParticipant.sid} > video`, $participants).get(0);
@@ -361,6 +379,7 @@ async function joinRoom(token, connectOptions) {
       // Stop the LocalVideoTrack.
       localVideoTrack.stop();
 
+      cleanupMediaDeviceSelection();
       $takeSnapshot.off('click', takeSnapshotButtonHandler);
       $takeSnapshot.prop('disabled', true);
       room.localParticipant.off('networkQualityLevelChanged', networkQualityLevelChangedHandler);

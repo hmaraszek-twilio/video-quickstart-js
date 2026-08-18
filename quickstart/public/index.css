@@ -71,8 +71,13 @@ div.participant.main > video {
   color: #ff9ca5;
 }
 
-button#take-snapshot {
+button#take-snapshot,
+button#select-media {
   margin-right: 10px;
+}
+
+#select-media-modal select {
+  width: 100%;
 }
 
 .snapshot-body {
