@@ -28,6 +28,12 @@ const connectOptions = {
 
   dominantSpeaker: true,
 
+  // Enable the LocalParticipant's Network Quality level reporting.
+  networkQuality: {
+    local: 1,
+    remote: 0
+  },
+
   // VP8 simulcast enables the media server in a Group Room
   // to adapt your encoded video quality for each RemoteParticipant based on
   // their individual bandwidth constraints.

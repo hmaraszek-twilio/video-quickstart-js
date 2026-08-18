@@ -39,6 +39,38 @@ div.participant.main > video {
   height: 720px;
 }
 
+.network-quality {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  color: #fff;
+  display: inline-block;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0 10px;
+  min-width: 95px;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+}
+
+.network-quality-unknown {
+  color: #adb5bd;
+}
+
+.network-quality-good {
+  border-color: #28a745;
+  color: #8fe3a0;
+}
+
+.network-quality-fair {
+  border-color: #ffc107;
+  color: #ffe08a;
+}
+
+.network-quality-poor {
+  border-color: #dc3545;
+  color: #ff9ca5;
+}
+
 button#take-snapshot {
   margin-right: 10px;
 }

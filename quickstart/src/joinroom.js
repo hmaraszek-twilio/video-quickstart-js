@@ -3,11 +3,13 @@
 const { connect, createLocalVideoTrack, Logger } = require('twilio-video');
 const { isMobile } = require('./browser');
 const takeLocalVideoSnapshot = require('./localvideosnapshot');
+const updateNetworkQualityIndicator = require('./networkquality');
 const showError = require('./showerror');
 const togglePip = require('./togglepip');
 
 const $togglePip = $('#pip');
 const $takeSnapshot = $('#take-snapshot');
+const $networkQuality = $('#network-quality');
 const $snapshot = $('#snapshot');
 const $snapshotCanvas = $('#snapshot-canvas').get(0);
 const $snapshotImage = $('#snapshot-img').get(0);
@@ -273,6 +275,13 @@ async function joinRoom(token, connectOptions) {
   $takeSnapshot.prop('disabled', false);
   $takeSnapshot.click(takeSnapshotButtonHandler);
 
+  // Report the LocalParticipant's Network Quality level.
+  updateNetworkQualityIndicator($networkQuality, room.localParticipant.networkQualityLevel);
+  const networkQualityLevelChangedHandler = level => {
+    updateNetworkQualityIndicator($networkQuality, level);
+  };
+  room.localParticipant.on('networkQualityLevelChanged', networkQualityLevelChangedHandler);
+
   // Subscribe to the media published by RemoteParticipants already in the Room.
   room.participants.forEach(participant => {
     participantConnected(participant, room);
@@ -354,6 +363,8 @@ async function joinRoom(token, connectOptions) {
 
       $takeSnapshot.off('click', takeSnapshotButtonHandler);
       $takeSnapshot.prop('disabled', true);
+      room.localParticipant.off('networkQualityLevelChanged', networkQualityLevelChangedHandler);
+      updateNetworkQualityIndicator($networkQuality, null);
       $snapshot.modal('hide');
       if ($snapshotImage.src) {
         URL.revokeObjectURL($snapshotImage.src);
