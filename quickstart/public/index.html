@@ -23,6 +23,8 @@
         </ul>
         <button class="btn" id="pip" /><img src="pip.png" height="30"/></button>
         <span id="network-quality" class="network-quality network-quality-unknown" role="status" aria-live="polite" aria-label="Network quality unavailable" title="Network quality unavailable">Network: &mdash;</span>
+        <button class="btn btn-outline-light" id="mute-audio" disabled>Mute mic</button>
+        <button class="btn btn-outline-light" id="mute-video" disabled>Turn camera off</button>
         <button class="btn btn-outline-light" id="take-snapshot" disabled>Snapshot</button>
         <button class="btn btn-outline-light" id="select-media" disabled>Devices</button>
         <button class="btn btn-outline-primary" id="leave-room">Leave Room</button>
@@ -161,6 +163,10 @@
               <div class="modal-body">
                 <div class="alert alert-warning" role="alert">
                 </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Dismiss</button>
+              </div>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@
 const { connect, createLocalVideoTrack, Logger } = require('twilio-video');
 const { isMobile } = require('./browser');
 const takeLocalVideoSnapshot = require('./localvideosnapshot');
+const setupMediaControls = require('./mediacontrols');
 const setupMediaDeviceSelection = require('./mediaselection');
 const updateNetworkQualityIndicator = require('./networkquality');
 const showError = require('./showerror');
@@ -254,6 +255,12 @@ async function joinRoom(token, connectOptions) {
   // Handle the LocalParticipant's media.
   participantConnected(room.localParticipant, room);
 
+  // Enable microphone and camera controls while the user is in the Room.
+  const mediaControls = setupMediaControls({
+    getAudioTrack: () => localAudioTrack,
+    getVideoTrack: () => localVideoTrack
+  }, error => showError($showErrorModal, error));
+
   // Enable changing media devices while the user is in the Room.
   const cleanupMediaDeviceSelection = setupMediaDeviceSelection({
     getAudioTrack: () => localAudioTrack,
@@ -379,6 +386,7 @@ async function joinRoom(token, connectOptions) {
       // Stop the LocalVideoTrack.
       localVideoTrack.stop();
 
+      mediaControls.cleanup();
       cleanupMediaDeviceSelection();
       $takeSnapshot.off('click', takeSnapshotButtonHandler);
       $takeSnapshot.prop('disabled', true);

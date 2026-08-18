@@ -71,9 +71,15 @@ div.participant.main > video {
   color: #ff9ca5;
 }
 
+button#mute-audio,
+button#mute-video,
 button#take-snapshot,
 button#select-media {
   margin-right: 10px;
+}
+
+button.media-control-disabled {
+  color: #ff9ca5;
 }
 
 #select-media-modal select {
