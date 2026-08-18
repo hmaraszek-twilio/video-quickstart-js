@@ -2,9 +2,16 @@
 
 const { connect, createLocalVideoTrack, Logger } = require('twilio-video');
 const { isMobile } = require('./browser');
+const takeLocalVideoSnapshot = require('./localvideosnapshot');
+const showError = require('./showerror');
 const togglePip = require('./togglepip');
 
 const $togglePip = $('#pip');
+const $takeSnapshot = $('#take-snapshot');
+const $snapshot = $('#snapshot');
+const $snapshotCanvas = $('#snapshot-canvas').get(0);
+const $snapshotImage = $('#snapshot-img').get(0);
+const $showErrorModal = $('#show-error', $('#modals'));
 const $leave = $('#leave-room');
 const $room = $('#room');
 const $activeParticipant = $('div#active-participant > div.participant.main', $room);
@@ -243,6 +250,29 @@ async function joinRoom(token, connectOptions) {
   // Handle the LocalParticipant's media.
   participantConnected(room.localParticipant, room);
 
+  // Enable snapshots of the local video while the user is in the Room.
+  const localVideoElement = $(`div#${room.localParticipant.sid} > video`, $participants).get(0);
+  const takeSnapshotButtonHandler = async () => {
+    $takeSnapshot.prop('disabled', true);
+    try {
+      if ($snapshotImage.src) {
+        URL.revokeObjectURL($snapshotImage.src);
+        $snapshotImage.removeAttribute('src');
+      }
+      await takeLocalVideoSnapshot(localVideoElement, localVideoTrack, $snapshotCanvas, $snapshotImage);
+      $snapshot.modal({
+        focus: true,
+        show: true
+      });
+    } catch (error) {
+      showError($showErrorModal, error);
+    } finally {
+      $takeSnapshot.prop('disabled', false);
+    }
+  };
+  $takeSnapshot.prop('disabled', false);
+  $takeSnapshot.click(takeSnapshotButtonHandler);
+
   // Subscribe to the media published by RemoteParticipants already in the Room.
   room.participants.forEach(participant => {
     participantConnected(participant, room);
@@ -321,6 +351,16 @@ async function joinRoom(token, connectOptions) {
 
       // Stop the LocalVideoTrack.
       localVideoTrack.stop();
+
+      $takeSnapshot.off('click', takeSnapshotButtonHandler);
+      $takeSnapshot.prop('disabled', true);
+      $snapshot.modal('hide');
+      if ($snapshotImage.src) {
+        URL.revokeObjectURL($snapshotImage.src);
+        $snapshotImage.removeAttribute('src');
+      }
+      $snapshotImage.classList.add('d-none');
+      $snapshotCanvas.classList.add('d-none');
 
       // Handle the disconnected LocalParticipant.
       participantDisconnected(room.localParticipant, room);

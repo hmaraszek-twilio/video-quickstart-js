@@ -22,6 +22,7 @@
           </li>
         </ul>
         <button class="btn" id="pip" /><img src="pip.png" height="30"/></button>
+        <button class="btn btn-outline-light" id="take-snapshot" disabled>Snapshot</button>
         <button class="btn btn-outline-primary" id="leave-room">Leave Room</button>
       </div>
     </nav>
@@ -35,6 +36,22 @@
         </div>
       </div>
       <div id="modals">
+        <div class="modal fade" id="snapshot" tabindex="-1" role="dialog" aria-labelledby="snapshot-label" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="snapshot-label">Local Video Snapshot</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body snapshot-body">
+                <canvas id="snapshot-canvas" class="d-none"></canvas>
+                <img id="snapshot-img" class="d-none" alt="Snapshot of the local video" />
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="modal fade" id="select-mic" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="select-mic-label" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">

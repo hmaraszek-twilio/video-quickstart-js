@@ -39,6 +39,20 @@ div.participant.main > video {
   height: 720px;
 }
 
+button#take-snapshot {
+  margin-right: 10px;
+}
+
+.snapshot-body {
+  text-align: center;
+}
+
+.snapshot-body > canvas,
+.snapshot-body > img {
+  height: auto;
+  max-width: 100%;
+}
+
 div.participant.active {
   border: 1px solid crimson;
   box-shadow: 0 0 5px crimson;
